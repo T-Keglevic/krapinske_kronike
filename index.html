@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OCR Book Search</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body { font-family: Arial; margin: 40px; }
+input[type=text] { width: 400px; padding: 6px; }
+button { padding: 6px 12px; }
+.result { margin-bottom: 20px; }
+.page { font-weight: bold; }
+.score { color: green; margin-left: 10px; }
+mark { background: yellow; }
+.pagination { margin-top: 20px; }
+.pagination button { margin: 0 5px; padding: 4px 8px; }
+</style>
+</head>
+<body>
+
+<h2>OCR Book Search</h2>
+
+<input type="text" id="searchBox" placeholder="Enter search phrase">
+<button onclick="doSearch()">Search</button>
+
+<div id="results"></div>
+<div class="pagination" id="pagination"></div>
+
+<script src="fuse.min.js"></script>
+<script>
+let bookData = [];
+let fuse;
+let currentResults = [];
+let currentPage = 1;
+const perPage = 20;
+
+// Load JSON
+fetch('book_data.json')
+  .then(r => r.json())
+  .then(data => {
+    bookData = data;
+    fuse = new Fuse(bookData, {
+      keys: ['paragraph'],
+      includeScore: true,
+      threshold: 0.4
+    });
+  });
+
+// Highlight search query in snippet
+function highlight(text, query) {
+    const regex = new RegExp(query, 'gi');
+    return text.replace(regex, match => `<mark>${match}</mark>`);
+}
+
+// Display a page of results
+function displayResults(page=1) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '';
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    const pageResults = currentResults.slice(start, end);
+
+    if(pageResults.length === 0) {
+        resultsDiv.innerHTML = "<p>No results found.</p>";
+        document.getElementById('pagination').innerHTML = '';
+        return;
+    }
+
+    pageResults.forEach(r => {
+        const item = r.item;
+        const score = ((1 - r.score) * 100).toFixed(0);
+        const snippet = item.paragraph.length > 300 ? item.paragraph.slice(0,300) + "..." : item.paragraph;
+        const div = document.createElement('div');
+        div.className = 'result';
+        div.innerHTML = `<span class="page">Page ${item.page}</span> <span class="score">(${score}%)</span><br>${highlight(snippet, document.getElementById('searchBox').value)}`;
+        resultsDiv.appendChild(div);
+    });
+
+    // Pagination controls
+    const totalPages = Math.ceil(currentResults.length / perPage);
+    const paginationDiv = document.getElementById('pagination');
+    paginationDiv.innerHTML = '';
+
+    if(totalPages > 1){
+        if(page > 1){
+            const prev = document.createElement('button');
+            prev.innerText = "Previous";
+            prev.onclick = () => { currentPage--; displayResults(currentPage); };
+            paginationDiv.appendChild(prev);
+        }
+        const info = document.createElement('span');
+        info.innerText = ` Page ${page} of ${totalPages} `;
+        paginationDiv.appendChild(info);
+        if(page < totalPages){
+            const next = document.createElement('button');
+            next.innerText = "Next";
+            next.onclick = () => { currentPage++; displayResults(currentPage); };
+            paginationDiv.appendChild(next);
+        }
+    }
+}
+
+// Perform search
+function doSearch() {
+    const query = document.getElementById('searchBox').value.trim();
+    if(!query) return;
+    currentPage = 1;
+    currentResults = fuse.search(query);
+    displayResults(currentPage);
+}
+</script>
+
+</body>
+</html>
