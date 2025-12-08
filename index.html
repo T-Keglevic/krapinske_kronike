@@ -84,7 +84,7 @@ function displayResults(page=1) {
     if(totalPages > 1){
         if(page > 1){
             const prev = document.createElement('button');
-            prev.innerText = "Previous";
+            prev.innerText = "Prethodna";
             prev.onclick = () => { currentPage--; displayResults(currentPage); };
             paginationDiv.appendChild(prev);
         }
@@ -93,7 +93,7 @@ function displayResults(page=1) {
         paginationDiv.appendChild(info);
         if(page < totalPages){
             const next = document.createElement('button');
-            next.innerText = "Next";
+            next.innerText = "Sljedeća";
             next.onclick = () => { currentPage++; displayResults(currentPage); };
             paginationDiv.appendChild(next);
         }
