@@ -108,6 +108,13 @@ function doSearch() {
     currentResults = fuse.search(query);
     displayResults(currentPage);
 }
+
+document.getElementById('searchBox').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        doSearch();
+    }
+});
+
 </script>
 
 </body>
