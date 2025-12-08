@@ -1,6 +1,20 @@
+/* Base dark theme colors */
+:root {
+    --bg: #121212;
+    --surface: #1e1e1e;
+    --text: #e6e6e6;
+    --text-muted: #b0b0b0;
+    --primary: #3399ff;
+    --primary-hover: #1a82e2;
+    --highlight: #ffea00;
+    --border: #333;
+}
+
 /* Base styles */
 body {
     font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     margin: 20px;
     padding: 0;
     max-width: 900px;
@@ -17,46 +31,61 @@ body {
     margin-bottom: 20px;
 }
 
-/* Search box */
+/* Text input */
 #searchBox {
     flex: 1 1 250px;
     padding: 10px;
     font-size: 1rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
     border-radius: 6px;
-    max-width: 100%;
+    background: var(--surface);
+    color: var(--text);
 }
 
-/* Search button */
+#searchBox::placeholder {
+    color: var(--text-muted);
+}
+
+/* Buttons */
 button {
     padding: 10px 15px;
     font-size: 1rem;
     border: none;
-    background: #0077cc;
-    color: white;
+    background: var(--primary);
+    color: black;
     border-radius: 6px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 button:hover {
-    background: #005fa3;
+    background: var(--primary-hover);
 }
 
-/* Search results */
+/* Results */
 .result {
-    background: #f7f7f7;
+    background: var(--surface);
     padding: 12px;
     margin-bottom: 15px;
+    border: 1px solid var(--border);
     border-radius: 6px;
 }
 
 .page {
     font-weight: bold;
+    color: var(--highlight);
 }
 
 .score {
-    color: green;
+    color: #71d17b; /* green but softer */
     margin-left: 10px;
+}
+
+/* Highlight */
+mark {
+    background: var(--highlight);
+    color: black;
+    padding: 2px 4px;
 }
 
 /* Pagination */
@@ -71,12 +100,17 @@ button:hover {
 .pagination button {
     padding: 8px 12px;
     font-size: 1rem;
+    background: var(--primary);
+    color: black;
 }
 
-/* Highlight */
-mark {
-    background: yellow;
-    padding: 2px 4px;
+/* Links */
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-hover);
 }
 
 /* Mobile adjustments */
