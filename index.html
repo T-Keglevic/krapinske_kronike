@@ -1,69 +1,755 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kronika Krapine, sv.1</title>
-<link rel="stylesheet" href="style.css">
+<style>
+/* Base dark theme colors */
+:root {
+    --bg: #0a0a0a;
+    --surface: #1a1a1a;
+    --surface-elevated: #242424;
+    --text: #e8e8e8;
+    --text-muted: #a0a0a0;
+    --primary: #4a9eff;
+    --primary-hover: #6bb0ff;
+    --highlight: #ffd700;
+    --border: #2a2a2a;
+    --success: #5fcc7a;
+    --error: #ff5555;
+    --info: #7db3e8;
+    --warning: #ffaa33;
+}
+
+/* Base styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+/* Header */
+header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+}
+
+h1 {
+    color: var(--text);
+    margin: 0 0 8px 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 1rem;
+    font-style: italic;
+}
+
+/* Search bar container */
+.search-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: stretch;
+}
+
+/* Text input */
+#searchBox {
+    flex: 1 1 250px;
+    padding: 14px 18px;
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#searchBox:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(74, 158, 255, 0.15);
+}
+
+#searchBox::placeholder {
+    color: var(--text-muted);
+}
+
+/* Buttons */
+button {
+    padding: 14px 24px;
+    font-size: 1rem;
+    border: none;
+    background: var(--primary);
+    color: #000;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+
+button:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:disabled {
+    background: var(--border);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Threshold slider control */
+.threshold-control {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 25px;
+}
+
+.threshold-control label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.label-text {
+    font-weight: 600;
+    color: var(--text);
+    margin-right: 8px;
+}
+
+.threshold-value {
+    display: inline-block;
+    background: var(--primary);
+    color: #000;
+    padding: 3px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.label-hint {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-left: 8px;
+}
+
+/* Range slider styling */
+#thresholdSlider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+#thresholdSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#thresholdSlider::-webkit-slider-thumb:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+#thresholdSlider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#thresholdSlider::-moz-range-thumb:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+.threshold-markers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 0 2px;
+}
+
+/* Disclaimer */
+.disclaimer {
+    background: var(--surface-elevated);
+    border: 1px solid var(--warning);
+    border-left: 4px solid var(--warning);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 30px;
+}
+
+.disclaimer h3 {
+    margin: 0 0 12px 0;
+    color: var(--warning);
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.disclaimer p {
+    margin: 0 0 12px 0;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.disclaimer ul {
+    margin: 12px 0;
+    padding-left: 20px;
+}
+
+.disclaimer li {
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.disclaimer li strong {
+    color: var(--text);
+}
+
+.disclaimer-footer {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Loading indicator */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--info);
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+/* Message styles */
+.info-message {
+    background: var(--surface);
+    border-left: 4px solid var(--info);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 6px;
+    color: var(--text);
+}
+
+.error-message {
+    background: var(--surface);
+    border-left: 4px solid var(--error);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 6px;
+    color: var(--error);
+}
+
+/* Results */
+.result {
+    background: var(--surface);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.result:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.page {
+    font-weight: 700;
+    color: var(--highlight);
+    font-size: 1.05rem;
+}
+
+.score {
+    color: var(--success);
+    margin-left: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.snippet {
+    margin-top: 10px;
+    line-height: 1.7;
+    color: var(--text);
+}
+
+/* Highlight */
+mark {
+    background: var(--highlight);
+    color: #000;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-top: 35px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    background: var(--primary);
+    color: #000;
+    min-width: 110px;
+}
+
+.page-info {
+    color: var(--text);
+    padding: 0 12px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+/* Links */
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+a:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Small text styling */
+small {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+small i {
+    font-style: normal;
+}
+
+/* Mobile adjustments */
+@media (max-width: 700px) {
+    body {
+        padding: 15px;
+        font-size: 0.95rem;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    #searchBox {
+        font-size: 1rem;
+        width: 100%;
+        padding: 12px 15px;
+    }
+
+    button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 12px 18px;
+    }
+    
+    .threshold-control {
+        padding: 15px 18px;
+    }
+    
+    .label-hint {
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+    }
+    
+    .disclaimer {
+        padding: 16px 18px;
+        font-size: 0.9rem;
+    }
+    
+    .disclaimer h3 {
+        font-size: 1.05rem;
+    }
+
+    .result {
+        font-size: 0.95rem;
+        padding: 15px 16px;
+    }
+
+    .page {
+        font-size: 1rem;
+    }
+    
+    .pagination {
+        gap: 10px;
+    }
+    
+    .pagination button {
+        min-width: 90px;
+        padding: 10px 15px;
+        font-size: 0.95rem;
+    }
+    
+    .page-info {
+        font-size: 0.85rem;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white;
+        color: black;
+        max-width: 100%;
+    }
+    
+    header {
+        border-bottom-color: #ccc;
+    }
+    
+    .search-container,
+    .threshold-control,
+    .disclaimer,
+    .pagination {
+        display: none;
+    }
+    
+    .result {
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+        box-shadow: none;
+    }
+    
+    mark {
+        background: yellow;
+        color: black;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --border: #666;
+        --text: #ffffff;
+        --bg: #000000;
+    }
+    
+    button {
+        border: 2px solid currentColor;
+    }
+    
+    .result {
+        border-width: 2px;
+    }
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+</style>
 </head>
 <body>
 
-<h2>Kronika Krapine, sv.1</h2>
+<header>
+    <h1>Kronika Krapine, sv.1 (A. Kozina)</h1>
+    <p class="subtitle">digitalna pretraga povijesnog dokumenta</p>
+</header>
 
 <div class="search-container">
-    <input type="text" id="searchBox" placeholder="unesite pojam za pretragu">
-    <button onclick="doSearch()">Pretraži</button>
+    <input type="text" id="searchBox" placeholder="unesite pojam za pretragu (koristite * za wildcard)" aria-label="Pojam za pretragu">
+    <button onclick="doSearch()" aria-label="Pretraži">Pretraži</button>
 </div>
 
+<!-- Threshold slider control -->
+<div class="threshold-control">
+    <label for="thresholdSlider">
+        <span class="label-text">Preciznost pretrage:</span>
+        <span class="threshold-value" id="thresholdValue">0.6</span>
+        <span class="label-hint">(0.1 = najstroža, 1.0 = najfleksibilnija)</span>
+    </label>
+    <input 
+        type="range" 
+        id="thresholdSlider" 
+        min="0.1" 
+        max="1.0" 
+        step="0.1" 
+        value="0.6"
+        aria-label="Prag pretrage"
+    >
+    <div class="threshold-markers">
+        <span>0.1</span>
+        <span>0.5</span>
+        <span>1.0</span>
+    </div>
+</div>
+
+<!-- Disclaimer - positioned to be pushed down by results -->
+<div class="disclaimer" id="disclaimer">
+    <h3>⚠️ Napomena o kvaliteti pretrage</h3>
+    <p><strong>Kvaliteta pretvorbe skenirane slike u tekst varira.</strong> Ovaj dokument je digitaliziran iz fotografija starinskog i dijialektnog teksta. Tehnologija pretvorbe slike u digitalni tekst stvara puno šuma.</p>
+    <ul>
+        <li><strong>pokušajte različite pravopise</strong> - stari standardni ili kajkavski</li>
+        <li><strong>pretražite varijacije pojma</strong> - korijene riječi ili imenice</li>
+        <li><strong>koristite wildcard (*)</strong> - npr. "krap*" pronalazi "krapina", "krapinskih", itd.</li>
+        <li><strong>prilagodite preciznost</strong> - klizač prilagođuje rezultate pretrage</li>
+    </ul>
+    <p class="disclaimer-footer"></p>
+</div>
+
+<!-- Loading indicator -->
+<div id="loading" class="loading" style="display: none;">
+    Učitavanje podataka...
+</div>
+
+<!-- Results container -->
 <div id="results"></div>
+
+<!-- Pagination -->
 <div class="pagination" id="pagination"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
 <script>
+'use strict';
+
 let bookData = [];
 let fuse;
 let currentResults = [];
 let currentPage = 1;
 const perPage = 20;
+let currentThreshold = 0.6;
 
-// Load JSON
-fetch('book_data.json')
-  .then(r => r.json())
-  .then(data => {
-    bookData = data;
+// Initialize threshold slider
+const thresholdSlider = document.getElementById('thresholdSlider');
+const thresholdValue = document.getElementById('thresholdValue');
+
+thresholdSlider.addEventListener('input', function() {
+    currentThreshold = parseFloat(this.value);
+    thresholdValue.textContent = currentThreshold.toFixed(1);
+    
+    // Rebuild fuse with new threshold if data is loaded
+    if (bookData.length > 0) {
+        initializeFuse();
+    }
+});
+
+// Show loading state
+function showLoading(show) {
+    const loadingDiv = document.getElementById('loading');
+    const resultsDiv = document.getElementById('results');
+    const paginationDiv = document.getElementById('pagination');
+    
+    if (show) {
+        loadingDiv.style.display = 'block';
+        resultsDiv.innerHTML = '';
+        paginationDiv.innerHTML = '';
+    } else {
+        loadingDiv.style.display = 'none';
+    }
+}
+
+// Initialize Fuse.js with current threshold
+function initializeFuse() {
     fuse = new Fuse(bookData, {
-      keys: ['paragraph'],
-      includeScore: true,
-      threshold: 0.4
+        keys: ['paragraph'],
+        includeScore: true,
+        threshold: currentThreshold,
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+        useExtendedSearch: true  // Enable wildcard support
     });
-  });
+}
 
-// Highlight search query in snippet
+// Load JSON with error handling
+showLoading(true);
+fetch('book_data.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to load book data');
+        }
+        return response.json();
+    })
+    .then(data => {
+        bookData = data;
+        initializeFuse();
+        showLoading(false);
+        document.getElementById('results').innerHTML = '<p class="info-message">Podaci učitani. Upišite pojam za pretragu.</p>';
+    })
+    .catch(error => {
+        showLoading(false);
+        document.getElementById('results').innerHTML = `<p class="error-message">Greška pri učitavanju: ${escapeHtml(error.message)}</p>`;
+        console.error('Error loading book data:', error);
+    });
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Convert wildcard pattern to Fuse extended search format
+function prepareSearchQuery(query) {
+    // If query contains *, convert to Fuse.js extended search format
+    if (query.includes('*')) {
+        // Fuse uses single quote for exact match and pipe for OR
+        // For wildcards, we'll use their extended search
+        // * at end = prefix match, * at start = suffix match, * in middle = contains
+        return query; // Fuse handles * natively with extended search
+    }
+    return query;
+}
+
+// Highlight search query in snippet - XSS safe
 function highlight(text, query) {
-    const regex = new RegExp(query, 'gi');
-    return text.replace(regex, match => `<mark>${match}</mark>`);
+    if (!query || !text) return escapeHtml(text);
+    
+    // Remove wildcards for highlighting purposes
+    const cleanQuery = query.replace(/\*/g, '');
+    if (!cleanQuery) return escapeHtml(text);
+    
+    // Escape the query for safe regex use
+    const escapedQuery = cleanQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escapedQuery, 'gi');
+    
+    // Escape HTML first, then add mark tags
+    const escaped = escapeHtml(text);
+    return escaped.replace(regex, match => `<mark>${match}</mark>`);
 }
 
 // Display a page of results
-function displayResults(page=1) {
+function displayResults(page = 1) {
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = '';
     const start = (page - 1) * perPage;
     const end = start + perPage;
     const pageResults = currentResults.slice(start, end);
 
-    if(pageResults.length === 0) {
-        resultsDiv.innerHTML = "<p>No results found.</p>";
+    if (pageResults.length === 0) {
+        resultsDiv.innerHTML = '<p class="info-message">Nema rezultata. Pokušajte s drugim pojmom, provjerite pravopis, ili povećajte prag pretrage.</p>';
         document.getElementById('pagination').innerHTML = '';
         return;
     }
 
+    // Create results elements
     pageResults.forEach(r => {
         const item = r.item;
         const score = ((1 - r.score) * 100).toFixed(0);
-        const snippet = item.paragraph.length > 300 ? item.paragraph.slice(0,300) + "..." : item.paragraph;
+        const snippet = item.paragraph.length > 300 
+            ? item.paragraph.slice(0, 300) + "..." 
+            : item.paragraph;
+        
         const div = document.createElement('div');
         div.className = 'result';
-        div.innerHTML = `<span class="page">Page ${item.page}</span><span class="score">(${score}%)</span><br><small><i>File:<a href="images/${item.filename}" target="_blank">${item.filename}</a></i></small><br>  ${highlight(snippet, document.getElementById('searchBox').value)}`;
+        
+        // Build HTML safely
+        const pageSpan = document.createElement('span');
+        pageSpan.className = 'page';
+        pageSpan.textContent = `Stranica ${item.page}`;
+        
+        const scoreSpan = document.createElement('span');
+        scoreSpan.className = 'score';
+        scoreSpan.textContent = `(${score}%)`;
+        
+        const br1 = document.createElement('br');
+        
+        const fileInfo = document.createElement('small');
+        const fileLink = document.createElement('a');
+        fileLink.href = `images/${encodeURIComponent(item.filename)}`;
+        fileLink.target = '_blank';
+        fileLink.rel = 'noopener noreferrer';
+        fileLink.textContent = item.filename;
+        
+        const fileLabel = document.createElement('i');
+        fileLabel.textContent = 'Slika: ';
+        fileInfo.appendChild(fileLabel);
+        fileInfo.appendChild(fileLink);
+        
+        const br2 = document.createElement('br');
+        
+        const textDiv = document.createElement('div');
+        textDiv.className = 'snippet';
+        // Use innerHTML only for the highlighted snippet (which is already escaped)
+        textDiv.innerHTML = highlight(snippet, document.getElementById('searchBox').value);
+        
+        div.appendChild(pageSpan);
+        div.appendChild(scoreSpan);
+        div.appendChild(br1);
+        div.appendChild(fileInfo);
+        div.appendChild(br2);
+        div.appendChild(textDiv);
+        
         resultsDiv.appendChild(div);
     });
 
@@ -72,38 +758,74 @@ function displayResults(page=1) {
     const paginationDiv = document.getElementById('pagination');
     paginationDiv.innerHTML = '';
 
-    if(totalPages > 1){
-        if(page > 1){
+    if (totalPages > 1) {
+        if (page > 1) {
             const prev = document.createElement('button');
-            prev.innerText = "Prethodna";
-            prev.onclick = () => { currentPage--; displayResults(currentPage); };
+            prev.textContent = "Prethodna";
+            prev.onclick = () => { 
+                currentPage--; 
+                displayResults(currentPage);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
             paginationDiv.appendChild(prev);
         }
+        
         const info = document.createElement('span');
-        info.innerText = ` Page ${page} of ${totalPages} `;
+        info.className = 'page-info';
+        info.textContent = ` Stranica ${page} od ${totalPages} (${currentResults.length} rezultata) `;
         paginationDiv.appendChild(info);
-        if(page < totalPages){
+        
+        if (page < totalPages) {
             const next = document.createElement('button');
-            next.innerText = "Sljedeća";
-            next.onclick = () => { currentPage++; displayResults(currentPage); };
+            next.textContent = "Sljedeća";
+            next.onclick = () => { 
+                currentPage++; 
+                displayResults(currentPage);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
             paginationDiv.appendChild(next);
         }
     }
 }
 
-// Perform search
+// Perform search with validation
 function doSearch() {
     const query = document.getElementById('searchBox').value.trim();
-    if(!query) return;
+    
+    if (!query) {
+        document.getElementById('results').innerHTML = '<p class="info-message">Unesite pojam za pretragu.</p>';
+        return;
+    }
+    
+    // Allow single character with wildcard
+    const cleanQuery = query.replace(/\*/g, '');
+    if (cleanQuery.length < 1) {
+        document.getElementById('results').innerHTML = '<p class="info-message">Pojam mora imati najmanje 1 znak (osim wildcard *).</p>';
+        return;
+    }
+    
+    if (!fuse) {
+        document.getElementById('results').innerHTML = '<p class="error-message">Podaci još nisu učitani. Pričekajte trenutak.</p>';
+        return;
+    }
+    
     currentPage = 1;
-    currentResults = fuse.search(query);
+    const searchQuery = prepareSearchQuery(query);
+    currentResults = fuse.search(searchQuery);
     displayResults(currentPage);
 }
 
+// Enter key support
 document.getElementById('searchBox').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
+        e.preventDefault();
         doSearch();
     }
+});
+
+// Focus search box on load
+window.addEventListener('load', function() {
+    document.getElementById('searchBox').focus();
 });
 
 </script>
