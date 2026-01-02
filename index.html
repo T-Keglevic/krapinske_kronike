@@ -258,6 +258,131 @@ button:disabled {
     font-style: italic;
 }
 
+/* Info button */
+.info-button {
+    background: var(--warning);
+    color: #000;
+    padding: 14px 18px;
+    min-width: auto;
+    font-size: 1.2rem;
+}
+
+.info-button:hover {
+    background: #ffbb55;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.85);
+    animation: fadeIn 0.2s ease;
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: var(--surface);
+    border: 2px solid var(--warning);
+    border-radius: 12px;
+    margin: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 2px solid var(--border);
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--warning);
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s ease, color 0.2s ease;
+    min-width: auto;
+}
+
+.close-button:hover {
+    background: var(--surface-elevated);
+    color: var(--text);
+    box-shadow: none;
+    transform: none;
+}
+
+.modal-body {
+    padding: 20px 24px 24px 24px;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.modal-body p {
+    margin: 0 0 16px 0;
+}
+
+.modal-body ul {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+.modal-body li {
+    margin-bottom: 10px;
+}
+
+.modal-body li strong {
+    color: var(--text);
+}
+
 /* Loading indicator */
 .loading {
     text-align: center;
@@ -530,6 +655,7 @@ small i {
 <div class="search-container">
     <input type="text" id="searchBox" placeholder="unesite pojam za pretragu (koristite * za wildcard)" aria-label="Pojam za pretragu">
     <button onclick="doSearch()" aria-label="Pretraži">Pretraži</button>
+    <button onclick="toggleModal()" class="info-button" aria-label="Informacije o pretrazi">ℹ️</button>
 </div>
 
 <!-- Threshold slider control -->
@@ -555,17 +681,23 @@ small i {
     </div>
 </div>
 
-<!-- Disclaimer - positioned to be pushed down by results -->
-<div class="disclaimer" id="disclaimer">
-    <h3>⚠️ Napomena o kvaliteti pretrage</h3>
-    <p><strong>Kvaliteta pretvorbe skenirane slike u tekst varira.</strong> Ovaj dokument je digitaliziran iz fotografija starinskog i dijialektnog teksta. Tehnologija pretvorbe slike u digitalni tekst stvara puno šuma.</p>
-    <ul>
-        <li><strong>pokušajte različite pravopise</strong> - stari standardni ili kajkavski</li>
-        <li><strong>pretražite varijacije pojma</strong> - korijene riječi ili imenice</li>
-        <li><strong>koristite wildcard (*)</strong> - npr. "krap*" pronalazi "krapina", "krapinskih", itd.</li>
-        <li><strong>prilagodite preciznost</strong> - klizač prilagođuje rezultate pretrage</li>
-    </ul>
-    <p class="disclaimer-footer"></p>
+<!-- Modal popup for disclaimer -->
+<div id="infoModal" class="modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>⚠️ Napomena o kvaliteti pretrage</h3>
+            <button class="close-button" onclick="toggleModal()" aria-label="Zatvori">×</button>
+        </div>
+        <div class="modal-body">
+            <p><strong>Kvaliteta pretvorbe skenirane slike u tekst varira.</strong> Ovaj dokument je digitaliziran iz fotografija starinskog i dijialektnog teksta. Tehnologija pretvorbe slike u digitalni tekst stvara puno šuma.</p>
+            <ul>
+                <li><strong>pokušajte različite pravopise</strong> - stari standardni ili kajkavski</li>
+                <li><strong>pretražite varijacije pojma</strong> - korijene riječi ili imenice</li>
+                <li><strong>koristite wildcard (*)</strong> - npr. "krap*" pronalazi "krapina", "krapinskih", itd.</li>
+                <li><strong>prilagodite preciznost</strong> - klizač prilagođuje rezultate pretrage</li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 <!-- Loading indicator -->
@@ -826,6 +958,29 @@ document.getElementById('searchBox').addEventListener('keydown', function(e) {
 // Focus search box on load
 window.addEventListener('load', function() {
     document.getElementById('searchBox').focus();
+});
+
+// Modal toggle function
+function toggleModal() {
+    const modal = document.getElementById('infoModal');
+    modal.classList.toggle('show');
+}
+
+// Close modal when clicking on backdrop (outside modal content)
+function closeModalOnBackdrop(event) {
+    if (event.target.id === 'infoModal') {
+        toggleModal();
+    }
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('infoModal');
+        if (modal.classList.contains('show')) {
+            toggleModal();
+        }
+    }
 });
 
 </script>
